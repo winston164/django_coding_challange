@@ -10,6 +10,8 @@ Requirements
 - Runs on docker and the application can be started with a single command `docker-compose up`
 - The running application can be reached in the browser at *[docker host]:8080*
 - The application is delivered with a sufficient admin reachable at *[docker host]:8080/admin*
+- Change the database to use mariadb instead of postgress
+- Make the django endpoints using https://www.django-rest-framework.org/ and explain why you use the path you choose.
 - Delivered as a public fork of this GitHub repository
 - **Show us your work** through your commit history
 - Unit test the django endpoints.
@@ -38,7 +40,7 @@ The email body must consist of a list of all a client's licenses which meet the 
 - expiration date
 - poc information of the client (name and email address)
 
-This job must be trigger-able via an HTTP POST request without authentication or csrf validation and must include a summary of notifications sent since the application started on the homepage.
+This job must be trigger-able via a REST API request without authentication or csrf validation and must include a summary of notifications sent since the application started on the homepage.
 
 Implement a logging mechanism that logs whenever an email is sent. This should have its own table and must log:
 - When the email was sent
