@@ -12,7 +12,6 @@ Requirements
 - The application is delivered with a sufficient admin reachable at *[docker host]:8080/admin*
 - Change the database to use mariadb instead of postgress
 - Make the django endpoints using https://www.django-rest-framework.org/ and explain why you use the path you choose.
-- Delivered as a public fork of this GitHub repository
 - **Show us your work** through your commit history
 - Unit test the django endpoints.
 - Add the sample data you use.
