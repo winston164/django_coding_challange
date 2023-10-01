@@ -60,3 +60,11 @@ Restrictions
 None! Use whatever tools / third party libraries you feel are necessary to complete the task.
 
 Fork of: https://github.com/castlabs/django-coding-challenge
+
+Guides
+======
+
+To create the root user run `docker-compose` as follows: 
+```
+docker-compose run license-server python manage.py createsuperuser
+```

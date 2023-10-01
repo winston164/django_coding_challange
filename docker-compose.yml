@@ -1,15 +1,31 @@
+version: '3'
+
 services:
   license-server:
     build:
       context: ./license_portal
     links:
-      - postgres
+      - mariadb
     volumes:
       - ./license_portal:/app
+    command: >
+        bash -c "python manage.py migrate
+        && python manage.py runserver 0.0.0.0:8080"
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    depends_on: 
+      - mariadb
 
-  postgres:
-    image: 'postgres:13'
+  mariadb:
+    image: mariadb
     environment:
-     POSTGRES_USER: 'licenses'
-     POSTGRES_PASSWORD: 'licenses'
-     POSTGRES_DB: 'licenses'
+      MYSQL_ROOT_PASSWORD: 'licences'
+      MYSQL_DATABASE: 'licenses'
+      MYSQL_USER: 'licenses'
+      MYSQL_PASSWORD: 'licenses'
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    
+volumes:
+  mariadb_data:
