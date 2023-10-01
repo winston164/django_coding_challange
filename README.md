@@ -68,3 +68,8 @@ To create the root user run `docker-compose` as follows:
 ```
 docker-compose run license-server python manage.py createsuperuser
 ```
+
+To make migrations run `docker-compose` as follows: 
+```
+docker-compose run license-server python manage.py makemigrations
+```
