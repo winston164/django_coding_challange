@@ -71,7 +71,18 @@ class NotifyRequest(models.Model):
     #     models.CharField(max_length=120, choices=NotificationTopic.choices),
     # )
     # medium = models.CharField(max_length=120, choices=NotifyRequestMedium)
+    # filter = models.JSONField(
+    #     blank=True,
+    #     ediatble=False,
+    #     help_text=
+    #     """
+    #     JSON field to set notification request filters like:
+    #     * Which clients
+    #     * Which users
+    #     * Which licenses
+    #     """
+    # )
     request_datetime = models.DateTimeField(auto_now=True)
-    notifications = models.ManyToManyField(Notification)
+    notifications = models.ManyToManyField(Notification, blank=True)
 
 
