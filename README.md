@@ -73,3 +73,17 @@ To make migrations run `docker-compose` as follows:
 ```
 docker-compose run license-server python manage.py makemigrations
 ```
+
+Testing
+=======
+
+1. Grant django database user the right permissions (mariadb):
+```bash
+# make sure that the mariadb container is running
+docker exec -it licenses-mariadb mariadb -u root -p -e "GRANT ALL PRIVILEGES ON test_licenses.* TO 'admin'@'%';"
+# you will be prompted to write the root user password
+```
+2. Run tests
+```
+docker-compose run license-server python manage.py test
+```

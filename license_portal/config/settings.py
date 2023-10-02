@@ -76,12 +76,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     # https://docs.djangoproject.com/en/4.2/ref/databases/#connecting-to-the-database
-    # TODO: (prod) User env variables? 
+    # TODO: Use env variables? 
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'licenses',
-        'USER': 'licenses',
-        'PASSWORD': 'licenses',
+        'USER': 'admin',
+        'PASSWORD': 'password',
         'HOST': 'mariadb',
     }
 }
@@ -127,3 +127,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email
+# https://docs.djangoproject.com/en/4.2/topics/email/
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 587 # default SMTP port
+# EMAIL_HOST_USER = 'email-user'
+# EMAIL_HOST_PASSWORD = 'email-host-password'
+
