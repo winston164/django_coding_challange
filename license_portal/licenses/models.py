@@ -46,3 +46,32 @@ class Client(models.Model):
     poc_contact_email = models.EmailField()
 
     admin_poc = models.ForeignKey(User, limit_choices_to={'is_staff': True}, on_delete=models.CASCADE)
+
+class NotificationTopic(models.TextChoices):
+    expiration_warning = 'Expiration Warning'
+
+class Notification(models.Model):
+    """ A Notification sent to a user
+    """
+    
+    topic = models.CharField(max_length=120, choices=NotificationTopic.choices)
+    send_datetime = models.DateTimeField(auto_now=True)
+    client = models.ForeignKey(Client, null=True, on_delete=models.SET_NULL)
+    message = models.TextField()
+    licenses = models.ManyToManyField(License)
+    user = models.ForeignKey(User, limit_choices_to={'is_staff': True}, on_delete=models.CASCADE)
+
+class NotifyRequestMedium(models.TextChoices):
+    email = 'email'
+
+class NotifyRequest(models.Model):
+    
+    # TODO: consider adding:
+    # topics = models.ArrayField(
+    #     models.CharField(max_length=120, choices=NotificationTopic.choices),
+    # )
+    # medium = models.CharField(max_length=120, choices=NotifyRequestMedium)
+    request_datetime = models.DateTimeField(auto_now=True)
+    notifications = models.ManyToManyField(Notification)
+
+
