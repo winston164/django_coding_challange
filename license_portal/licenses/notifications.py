@@ -4,26 +4,33 @@ from django.core.mail import send_mail
 from django.template import Template
 from django.template.loader import get_template
 
+from .serializers import NotificationSerializer
+
+from .models import Notification
+
 DEFAULT_FROM_EMAIL = "noreply@email.com"
 
 
 class EmailNotification:
     """A convenience class to send email notifications"""
 
-    subject = None  # type: str
     from_email = DEFAULT_FROM_EMAIL  # type: str
-    template_path = None  # type: str
+    template_path = 'notification-email.html'  # type: str
+
+    def __init__(self, notification: Notification):
+        serialized_notification = NotificationSerializer(notification)
+        self.context = serialized_notification.data
+        self.subject = notification.get_topic_display()
 
     @classmethod
     def load_template(cls) -> Template:
         """Load the configured template path"""
         return get_template(cls.template_path)
 
-    @classmethod
-    def send_notification(cls, recipients: List[str], context: Any):
+    def send_notification(self, recipient: str):
         """Send the notification using the given context"""
-        template = cls.load_template()
-        message_body = template.render(context=context)
+        template = self.load_template()
+        message_body = template.render(context=self.context)
         send_mail(
-            cls.subject, message_body, cls.from_email, recipients, fail_silently=False
+            self.subject, message_body, self.from_email, [recipient], fail_silently=False
         )
