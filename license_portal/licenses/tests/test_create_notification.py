@@ -63,6 +63,7 @@ class TestCreateNotification(TestCase):
                         "admin_name": "user",
                         "expiring_licenses": [
                             {
+                                "id": 1,
                                 "type": "Production",
                                 "package": "JavaScript SDK",
                                 "expiration_date": "2023-01-07",
