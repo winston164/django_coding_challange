@@ -32,7 +32,7 @@ class TestCreateNotification(TestCase):
             poc_contact_email="client@email.com",
             admin_poc=user,
         )
-        License.objects.create(
+        lic = License.objects.create(
             client=client,
             package=Package.javascript_sdk,
             license_type=LicenseType.production,
@@ -63,7 +63,7 @@ class TestCreateNotification(TestCase):
                         "admin_name": "user",
                         "expiring_licenses": [
                             {
-                                "id": 1,
+                                "id": lic.id,
                                 "type": "Production",
                                 "package": "JavaScript SDK",
                                 "expiration_date": "2023-01-07",

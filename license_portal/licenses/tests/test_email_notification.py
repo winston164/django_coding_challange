@@ -10,7 +10,6 @@ from licenses.models import (
     LicenseType,
     Notification,
     NotificationTopic,
-    NotifyRequest,
     Package,
 )
 
