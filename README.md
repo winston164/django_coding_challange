@@ -87,3 +87,8 @@ docker exec -it licenses-mariadb mariadb -u root -p -e "GRANT ALL PRIVILEGES ON 
 ```
 docker-compose run license-server python manage.py test
 ```
+
+Improvements
+============
+
+Create a docker-compose and dockerfile for develpment and remove freezegun from requirements.txt
