@@ -2,8 +2,14 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 from freezegun import freeze_time
-from licenses.models import (Client, License, LicenseType, Notification,
-                             NotifyRequest, Package)
+from licenses.models import (
+    Client,
+    License,
+    LicenseType,
+    Notification,
+    NotifyRequest,
+    Package,
+)
 
 
 class TestCreateNotification(TestCase):
