@@ -12,6 +12,7 @@ from .serializers import NotifyRequestSerializer
 
 ONE_WEEK = timezone.timedelta(days=7)
 ONE_MONTH = timezone.timedelta(days=31)
+FOUR_MONTS = ONE_MONTH * 4
 
 viewsets.ModelViewSet
 
@@ -31,6 +32,7 @@ class NotifyRequestViewSet(viewsets.ViewSet):
         for client_license in licenses:
             exp_date = client_license.expiration_datetime
             exp_delta = exp_date - date_now
+            exp_delta = timezone.timedelta(days=exp_delta.days)
             
             expires_in_week = exp_delta < ONE_WEEK
 
@@ -38,7 +40,9 @@ class NotifyRequestViewSet(viewsets.ViewSet):
             today_is_monday = date_now.weekday() == 0
             is_monday_warning = expires_in_month and today_is_monday
 
-            if expires_in_week or is_monday_warning:
+            expires_in_4_months = exp_delta == FOUR_MONTS
+
+            if expires_in_week or is_monday_warning or expires_in_4_months:
                 message = ""
                 notification = Notification.objects.create(
                     topic=NotificationTopic.expiration_warning,
