@@ -1,16 +1,15 @@
-from typing import List, Any
+from typing import Any, List
 
 from django.core.mail import send_mail
 from django.template import Template
 from django.template.loader import get_template
 
-
-DEFAULT_FROM_EMAIL = 'noreply@email.com'
+DEFAULT_FROM_EMAIL = "noreply@email.com"
 
 
 class EmailNotification:
-    """ A convenience class to send email notifications
-    """
+    """A convenience class to send email notifications"""
+
     subject = None  # type: str
     from_email = DEFAULT_FROM_EMAIL  # type: str
     template_path = None  # type: str
@@ -25,4 +24,6 @@ class EmailNotification:
         """Send the notification using the given context"""
         template = cls.load_template()
         message_body = template.render(context=context)
-        send_mail(cls.subject, message_body, cls.from_email, recipients, fail_silently=False)
+        send_mail(
+            cls.subject, message_body, cls.from_email, recipients, fail_silently=False
+        )

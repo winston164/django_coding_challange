@@ -1,12 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import (
-    License, 
-    Client,
-    Notification,
-    NotifyRequest
-)
+from .models import Client, License, Notification, NotifyRequest
 
 admin.site.register(License)
 admin.site.register(Client)

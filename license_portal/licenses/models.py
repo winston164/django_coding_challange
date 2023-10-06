@@ -1,7 +1,7 @@
 """ Data model for licenses application
 """
 
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -11,6 +11,7 @@ LICENSE_EXPIRATION_DELTA = timedelta(days=90)
 
 class Package(models.IntegerChoices):
     """A Package accessible to a client with a valid license"""
+
     javascript_sdk = 0, "JavaScript SDK"
     ios_sdk = 1, "IOS SDK"
     android_sdk = 2, "Android SDK"
@@ -18,6 +19,7 @@ class Package(models.IntegerChoices):
 
 class LicenseType(models.IntegerChoices):
     """A license type"""
+
     production = 0, "Production"
     evaluation = 1, "Evaluation"
 
@@ -28,9 +30,9 @@ def get_default_license_expiration() -> datetime:
 
 
 class License(models.Model):
-    """ Data model for a client license allowing access to a package
-    """
-    client = models.ForeignKey('Client', on_delete=models.CASCADE)
+    """Data model for a client license allowing access to a package"""
+
+    client = models.ForeignKey("Client", on_delete=models.CASCADE)
     package = models.PositiveSmallIntegerField(choices=Package.choices)
     license_type = models.PositiveSmallIntegerField(choices=LicenseType.choices)
 
@@ -38,7 +40,7 @@ class License(models.Model):
     expiration_datetime = models.DateTimeField(default=get_default_license_expiration)
 
     def __str__(self):
-        expiration_date = self.expiration_datetime.strftime('%Y-%m-%d')
+        expiration_date = self.expiration_datetime.strftime("%Y-%m-%d")
         return f"""
 License: 
   id: {self.id if self.id else "not created yet"}
@@ -50,36 +52,42 @@ License:
 
 
 class Client(models.Model):
-    """ A client who holds licenses to packages
-    """
+    """A client who holds licenses to packages"""
+
     client_name = models.CharField(max_length=120, unique=True)
     poc_contact_name = models.CharField(max_length=120)
     poc_contact_email = models.EmailField()
 
-    admin_poc = models.ForeignKey(User, limit_choices_to={'is_staff': True}, on_delete=models.CASCADE)
+    admin_poc = models.ForeignKey(
+        User, limit_choices_to={"is_staff": True}, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return f"{self.poc_contact_name}, {self.poc_contact_email}"
 
+
 class NotificationTopic(models.TextChoices):
-    expiration_warning = 'Expiration Warning'
+    expiration_warning = "Expiration Warning"
+
 
 class Notification(models.Model):
-    """ A Notification sent to a user
-    """
-    
+    """A Notification sent to a user"""
+
     topic = models.CharField(max_length=120, choices=NotificationTopic.choices)
     send_datetime = models.DateTimeField(auto_now=True)
     client = models.ForeignKey(Client, null=True, on_delete=models.SET_NULL)
     message = models.TextField()
     licenses = models.ManyToManyField(License)
-    user = models.ForeignKey(User, limit_choices_to={'is_staff': True}, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, limit_choices_to={"is_staff": True}, on_delete=models.CASCADE
+    )
+
 
 class NotifyRequestMedium(models.TextChoices):
-    email = 'email'
+    email = "email"
+
 
 class NotifyRequest(models.Model):
-    
     # TODO: consider adding:
     # topics = models.ArrayField(
     #     models.CharField(max_length=120, choices=NotificationTopic.choices),
@@ -98,5 +106,3 @@ class NotifyRequest(models.Model):
     # )
     request_datetime = models.DateTimeField(auto_now=True)
     notifications = models.ManyToManyField(Notification, blank=True)
-
-

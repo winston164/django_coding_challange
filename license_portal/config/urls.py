@@ -19,6 +19,6 @@ from django.urls import include, path
 from licenses.routers import notification_router
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('license-ms/', include(notification_router.urls))
+    path("admin/", admin.site.urls),
+    path("license-ms/", include(notification_router.urls)),
 ]
