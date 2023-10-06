@@ -25,6 +25,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_expiring_licenses(self, obj):
         return [
             {
+                "id": lic.id,
                 "type": lic.get_license_type_display(),
                 "package": lic.get_package_display(),
                 "expiration_date": lic.expiration_datetime.strftime("%Y-%m-%d"),
