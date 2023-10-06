@@ -37,6 +37,17 @@ class License(models.Model):
     created_datetime = models.DateTimeField(auto_now=True)
     expiration_datetime = models.DateTimeField(default=get_default_license_expiration)
 
+    def __str__(self):
+        expiration_date = self.expiration_datetime.strftime('%Y-%m-%d')
+        return f"""
+License: 
+  id: {self.id if self.id else "not created yet"}
+  license type: {self.get_license_type_display()}
+  package: {self.get_package_display()}
+  expiration date: {expiration_date}
+  client: {self.client}
+"""
+
 
 class Client(models.Model):
     """ A client who holds licenses to packages
@@ -46,6 +57,9 @@ class Client(models.Model):
     poc_contact_email = models.EmailField()
 
     admin_poc = models.ForeignKey(User, limit_choices_to={'is_staff': True}, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.poc_contact_name}, {self.poc_contact_email}"
 
 class NotificationTopic(models.TextChoices):
     expiration_warning = 'Expiration Warning'
