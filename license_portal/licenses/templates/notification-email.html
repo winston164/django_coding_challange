@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Generated with the help of ChatGPT-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ topic }}</title>
+</head>
+<body>
+    <p>Hello {{ admin_name }},</p>
+
+    <p>We wanted to inform you that some of your client {{ client_info }} licenses are about to expire soon. Please review the following details:</p>
+
+    <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Package</th>
+                <th>Expiration Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for license in expiring_licenses %}
+            <tr>
+                <td>{{ license.id }}</td>
+                <td>{{ license.type }}</td>
+                <td>{{ license.package }}</td>
+                <td>{{ license.expiration_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Please take the necessary actions to renew or update these licenses to ensure uninterrupted service for your client.</p>
+
+    <p>Thank you for your attention to this matter.</p>
+
+    <p>Sincerely,<br>
+    Afiniteam</p>
+</body>
+</html>
