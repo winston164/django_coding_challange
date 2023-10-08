@@ -37,25 +37,26 @@ class NotifyRequestViewSet(viewsets.ViewSet):
 
     def create(self, request: Request):
         notify_req = NotifyRequest.objects.create()
+        clients: [Client] = Client.objects.all()
 
-        licenses = []
-        try:
-            client: Client = Client.objects.get()
+        notifications = []
+
+        for client in clients:
             licenses = client.license_set.all()
-        except Client.DoesNotExist:
-            pass
+            expirations = [lic for lic in licenses if should_warn(lic)]
 
-        expirations = [lic for lic in licenses if should_warn(lic)]
+            if len(expirations) > 0:
+                notification = Notification.objects.create(
+                    topic=NotificationTopic.expiration_warning,
+                    client=client,
+                    message="",
+                    user=client.admin_poc,
+                )
+                notification.licenses.set(expirations)
+                notification.save()
+                notifications.append(notification)
 
-        if len(expirations) > 0:
-            notification = Notification.objects.create(
-                topic=NotificationTopic.expiration_warning,
-                client=client,
-                message="",
-                user=client.admin_poc,
-            )
-            notification.licenses.set(expirations)
-            notify_req.notifications.add(notification)
+        notify_req.notifications.set(notifications)
         notify_req.save()
 
         serialized_response = NotifyRequestSerializer(notify_req)
