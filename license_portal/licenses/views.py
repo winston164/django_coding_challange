@@ -1,16 +1,12 @@
-import json
-from datetime import datetime
-
 from django.utils import timezone
 from rest_framework import status, viewsets
-from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from licenses.notifications import EmailNotification
 
 from .models import Client, License, Notification, NotificationTopic, NotifyRequest
-from .serializers import NotifyRequestSerializer
+from .serializers import NotifyRequestSerializer, NotificationSerializer
 
 ONE_WEEK = timezone.timedelta(days=7)
 ONE_MONTH = timezone.timedelta(days=31)
@@ -32,7 +28,6 @@ def should_warn(lic: License):
     return (expires_in_week or is_monday_warning or expires_in_4_months)
 
 class NotifyRequestViewSet(viewsets.ViewSet):
-    """API endpoint to view notification"""
 
     queryset = NotifyRequest.objects.all()
     serializer = NotifyRequestSerializer
@@ -67,3 +62,11 @@ class NotifyRequestViewSet(viewsets.ViewSet):
 
         serialized_response = NotifyRequestSerializer(notify_req)
         return Response(serialized_response.data, status=status.HTTP_200_OK)
+
+class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint to view notifications"""
+
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
+
