@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
+from django.core import mail as django_email
 from django.test import TestCase
 from freezegun import freeze_time
 from licenses.models import Client, Notification, NotifyRequest
-from licenses.tests.utils import get_expiring_licenses_for, parse_license_from
+from licenses.tests.utils import get_email_body, get_expiring_licenses_for, parse_license_from
 
 
 class TestManyLicencesNotification(TestCase):
@@ -31,20 +32,22 @@ class TestManyLicencesNotification(TestCase):
         # Execute
         response = self.client.post(url)
 
-        # Assert
+        # Assert Status
         self.assertEqual(response.status_code, 200)
 
+        # Assert DB
         self.assertEqual(NotifyRequest.objects.count(), 1)
         self.assertEqual(Notification.objects.count(), 1)
+        notification = Notification.objects.get()
 
+        # Assert Expired Licenses
         expected_licenses = [parse_license_from(lic) for lic in lics]
         licenses = response.data["notifications"][0].pop("expiring_licenses")
-
         expected_licenses.sort(key=lambda lic: lic["id"])
         licenses.sort(key=lambda lic: lic["id"])
-
         self.assertEqual(expected_licenses, licenses)
 
+        # Assert Response
         self.assertEqual(
             response.data,
             {
@@ -60,3 +63,26 @@ class TestManyLicencesNotification(TestCase):
                 ],
             },
         )
+
+        # Assert email
+        self.assertEqual(len(django_email.outbox), 1)
+        sent_email = django_email.outbox[0]
+
+        expected_email_body = get_email_body(
+            topic=notification.get_topic_display(),
+            username=user.username,
+            client=client,
+            licenses=lics,
+        )
+
+        self.assertEqual(sent_email.subject, notification.get_topic_display())
+
+        self.assertEqual(sent_email.from_email, "noreply@email.com")
+        self.assertEqual(sent_email.to, [user.email])
+
+        body = sent_email.body.splitlines()
+        expected_body = expected_email_body.splitlines()
+
+        self.assertEqual(len(body), len(expected_body))
+        self.assertListEqual(body, expected_body)
+

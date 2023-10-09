@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core import mail as django_email
 from django.test import TestCase
 from django.utils import timezone
 from freezegun import freeze_time
@@ -10,7 +11,7 @@ from licenses.models import (
     NotifyRequest,
     Package,
 )
-from licenses.tests.utils import parse_license_from
+from licenses.tests.utils import get_email_body, parse_license_from
 
 
 class TestMondayNotification(TestCase):
@@ -45,12 +46,15 @@ class TestMondayNotification(TestCase):
         # Execute
         response = self.client.post(url)
 
-        # Assert
+        # Assert Status
         self.assertEqual(response.status_code, 200)
 
+        # Assert DB
         self.assertEqual(NotifyRequest.objects.count(), 1)
         self.assertEqual(Notification.objects.count(), 1)
+        notification = Notification.objects.get()
 
+        # Assert Response
         self.assertEqual(
             response.data,
             {
@@ -67,3 +71,26 @@ class TestMondayNotification(TestCase):
                 ],
             },
         )
+
+        # Assert email
+        self.assertEqual(len(django_email.outbox), 1)
+        sent_email = django_email.outbox[0]
+
+        expected_email_body = get_email_body(
+            topic=notification.get_topic_display(),
+            username=user.username,
+            client=client,
+            licenses=[lic],
+        )
+
+        self.assertEqual(sent_email.subject, notification.get_topic_display())
+
+        self.assertEqual(sent_email.from_email, "noreply@email.com")
+        self.assertEqual(sent_email.to, [user.email])
+
+        body = sent_email.body.splitlines()
+        expected_body = expected_email_body.splitlines()
+
+        self.assertEqual(len(body), len(expected_body))
+        self.assertListEqual(body, expected_body)
+
