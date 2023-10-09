@@ -15,7 +15,7 @@ class NotFoundTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class TestNotificationsEndpiont(TestCase):
+class TestNotifyEndpiont(TestCase):
     def test_endpoint_reachable(self):
         # Prepare
         url = "/license-ms/notify/"
@@ -44,3 +44,14 @@ class TestNotificationsEndpiont(TestCase):
             response.data,
             {"request_datetime": "2023-01-01T12:00:00Z", "notifications": []},
         )
+
+class TestNotificationLog(TestCase):
+    def test_log_endpoint_reachable(self):
+        # Prepare
+        url = "/license-ms/notifications/"
+
+        # Execute
+        response = self.client.get(url)
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
