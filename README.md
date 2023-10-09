@@ -92,3 +92,4 @@ Improvements
 ============
 
 Create a docker-compose and dockerfile for develpment and remove freezegun from requirements.txt
+Use absolute instead of relative paths for imports
