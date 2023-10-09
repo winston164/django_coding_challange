@@ -71,4 +71,38 @@ class TestManyUserNotification(TestCase):
 
         self.assertListEqual(response.data, expected_notifications)
 
+    def test_notification_log_limit(self):
+        # Prepare
+        with freeze_time("2023-01-05 12:00:00"):
+            self.client.post('/license-ms/notify/')
+
+        with freeze_time("2023-01-02 12:00:00"):
+            self.client.post('/license-ms/notify/')
+
+        with freeze_time("2023-01-03 12:00:00"):
+            self.client.post('/license-ms/notify/')
+
+        limit = 5
+        url = f"/license-ms/notifications/?limit={limit}"
+
+        # Execute
+        response = self.client.get(url)
+
+        # Assert Status
+        self.assertEqual(response.status_code, 200)
+
+        # Assert DB consistensy
+        notifications = list(Notification.objects.all())
+        self.assertEqual(len(response.data), limit)
+
+        # Assert Order
+        notifications.sort(key=lambda notification: notification.send_datetime, reverse=True)
+        notifications = notifications[:5]
+
+        expected_notifications = [
+            NotificationSerializer(notification).data
+            for notification in notifications
+        ]
+
+        self.assertListEqual(response.data, expected_notifications)
 
