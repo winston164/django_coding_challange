@@ -68,8 +68,7 @@ class TestEmailNotification(TestCase):
         )
 
         # Execute
-        notification_email = EmailNotification(notification)
-        notification_email.send_notification(user.email)
+        EmailNotification.send_notification(notification, user.email)
 
         # Assert
         self.assertEqual(len(django_email.outbox), 1)
