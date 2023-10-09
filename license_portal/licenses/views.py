@@ -66,7 +66,7 @@ class NotifyRequestViewSet(viewsets.ViewSet):
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint to view notifications"""
 
-    queryset = Notification.objects.all()
+    queryset = Notification.objects.all().order_by('-send_datetime')
     serializer_class = NotificationSerializer
 
 
