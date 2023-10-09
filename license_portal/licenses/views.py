@@ -7,6 +7,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from licenses.notifications import EmailNotification
+
 from .models import Client, License, Notification, NotificationTopic, NotifyRequest
 from .serializers import NotifyRequestSerializer
 
@@ -54,6 +56,10 @@ class NotifyRequestViewSet(viewsets.ViewSet):
                 )
                 notification.licenses.set(expirations)
                 notification.save()
+
+                EmailNotification.send_notification(notification, client.admin_poc.email)
+                
+
                 notifications.append(notification)
 
         notify_req.notifications.set(notifications)
