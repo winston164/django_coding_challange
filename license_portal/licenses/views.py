@@ -69,4 +69,18 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Notification.objects.all().order_by('-send_datetime')
     serializer_class = NotificationSerializer
 
+    def get_queryset(self):
+        queryset = Notification.objects.all().order_by('-send_datetime')
+        limit = self.request.query_params.get('limit')
+        if limit == None:
+            return queryset
 
+        try:
+            limit = int(limit)
+            return self.queryset[:limit]
+        except ValueError:
+            limit = None
+
+
+        return queryset
+        
