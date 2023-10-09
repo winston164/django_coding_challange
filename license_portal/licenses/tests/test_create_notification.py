@@ -10,14 +10,14 @@ from licenses.models import (
     NotifyRequest,
     Package,
 )
+from licenses.tests.utils import parse_license_from
 
 
 class TestCreateNotification(TestCase):
     @freeze_time("2023-01-01 12:00:00")
     def test_week_expiration(self):
         """
-        Test to verify a notification resource is created
-        when a license expires in a week
+        Notification resource is created when a license expires in a week
         """
 
         # Prepare
@@ -61,14 +61,7 @@ class TestCreateNotification(TestCase):
                         "message": "",
                         "client_info": str(client),
                         "admin_name": "user",
-                        "expiring_licenses": [
-                            {
-                                "id": lic.id,
-                                "type": "Production",
-                                "package": "JavaScript SDK",
-                                "expiration_date": "2023-01-07",
-                            }
-                        ],
+                        "expiring_licenses": [parse_license_from(lic)],
                     }
                 ],
             },

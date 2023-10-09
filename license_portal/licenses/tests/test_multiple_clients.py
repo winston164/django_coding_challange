@@ -1,15 +1,13 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from freezegun import freeze_time
-from licenses.models import (
-    Client,
-    Notification,
-    NotifyRequest,
-)
-from .utils import get_expiring_licenses_for
+from licenses.models import Notification, NotifyRequest
+
+from .utils import get_clients_for, get_expiring_licenses_for, parse_license_from
+
 
 class TestManyClientsNotification(TestCase):
-    @freeze_time("2023-01-02 12:00:00") # this date was a monday
+    @freeze_time("2023-01-02 12:00:00")  # this date was a monday
     def test_multiple_clients(self):
         """
         Many Notifications for many Clients
@@ -21,24 +19,13 @@ class TestManyClientsNotification(TestCase):
             email="user@email.com",
             password="password",
         )
-        clients = [
-            Client.objects.create(
-                client_name=f"client{n}",
-                poc_contact_name=f"Client{n} Example",
-                poc_contact_email=f"client{n}@email.com",
-                admin_poc=user,
-            )
-            for n in range(3)
-        ]
-
+        clients = get_clients_for(user)
 
         lics = []
 
         for client in clients:
             licenses = get_expiring_licenses_for(client)
             lics.extend(licenses)
-        
-
 
         url = "/license-ms/notify/"
 
@@ -51,16 +38,8 @@ class TestManyClientsNotification(TestCase):
         self.assertEqual(NotifyRequest.objects.count(), 1)
         self.assertEqual(Notification.objects.count(), len(clients))
 
+        expected_licenses = [parse_license_from(lic) for lic in lics]
 
-        expected_licenses = [
-            {
-                "id": lic.id,
-                "type": lic.get_license_type_display(),
-                "package": lic.get_package_display(),
-                "expiration_date": lic.expiration_datetime.strftime("%Y-%m-%d"),
-            }
-            for lic in lics
-        ]
         licenses = []
         for notification in response.data["notifications"]:
             lics = notification.pop("expiring_licenses")
@@ -82,9 +61,8 @@ class TestManyClientsNotification(TestCase):
                         "message": "",
                         "client_info": str(client),
                         "admin_name": "user",
-                    } for client in clients 
+                    }
+                    for client in clients
                 ],
             },
         )
-
-

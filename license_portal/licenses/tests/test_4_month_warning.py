@@ -10,13 +10,14 @@ from licenses.models import (
     NotifyRequest,
     Package,
 )
+from licenses.tests.utils import parse_license_from
+
 
 class TestFourMonthsNotification(TestCase):
-    @freeze_time("2023-01-02 12:00:00") # this date was a monday
+    @freeze_time("2023-01-02 12:00:00")  # this date was a monday
     def test_four_month_warning(self):
         """
-        Test to verify a notification resource is created
-        when a license expires in exactly 4 months
+        Notification resource is created at 4 months expiration
         """
 
         # Prepare
@@ -35,7 +36,7 @@ class TestFourMonthsNotification(TestCase):
             client=client,
             package=Package.javascript_sdk,
             license_type=LicenseType.production,
-            expiration_datetime=timezone.now() + timezone.timedelta(days=31*4),
+            expiration_datetime=timezone.now() + timezone.timedelta(days=31 * 4),
         )
         url = "/license-ms/notify/"
 
@@ -58,15 +59,8 @@ class TestFourMonthsNotification(TestCase):
                         "send_datetime": "2023-01-02T12:00:00Z",
                         "message": "",
                         "client_info": str(client),
-                        "admin_name": "user",
-                        "expiring_licenses": [
-                            {
-                                "id": lic.id,
-                                "type": "Production",
-                                "package": "JavaScript SDK",
-                                "expiration_date": lic.expiration_datetime.strftime("%Y-%m-%d"),
-                            }
-                        ],
+                        "admin_name": user.username,
+                        "expiring_licenses": [parse_license_from(lic)],
                     }
                 ],
             },
